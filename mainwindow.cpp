@@ -28,10 +28,33 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QString MainWindow::calculation(bool &ok)
+QString MainWindow::calculation()
 {
-
-    return "";
+    double result;
+    if (codes == "+") {
+        if (operand == "")
+            result = operands.toDouble() * 2;
+        else
+            result = operands.toDouble() + operand.toDouble();
+    } else if (codes == "-") {
+        if (operand == "")
+            result = 0;
+        else
+            result = operands.toDouble() - operand.toDouble();
+    } else if (codes == "×") {
+        if (operand == "")
+            result = operands.toDouble() * operands.toDouble();
+        else
+            result = operands.toDouble() * operand.toDouble();
+    } else {
+        if (operand == "")
+            result = 1;
+        else if (operand == "0") {
+            return "除数不能为零";
+        }
+        result = operands.toDouble() / operand.toDouble();
+    }
+    return QString::number(result);
 }
 
 //数字键
@@ -80,6 +103,9 @@ void MainWindow::on_btnDel_clicked()
 void MainWindow::on_btnClearAll_clicked()
 {
     operand = "";
+    operands = "";
+    code = "";
+    codes = "";
     ui->display->setText(operand);
 }
 
@@ -100,7 +126,7 @@ void MainWindow::btnOperatorClicked()
     }
     if (codes != "") {
         //计算
-        operands = operands + codes + operand;
+        operands = calculation();
         operand = "";
         codes = code;
         ui->display->setText(operands);
@@ -112,7 +138,7 @@ void MainWindow::btnOperatorClicked()
         } else {
             operands = "0";
         }
-        ui->display->setText(operand);
+        ui->display->setText(operands);
         codes = code;
     }
 
@@ -125,11 +151,11 @@ void MainWindow::on_btnEqual_clicked()
     if (codes != "") {      //有操作符时
         //计算
         if (operand == "") {                    //操作数为空让它自己乘自己
-            operands = operands + codes + operands;
+            operands = calculation();
             codes = "";
             ui->display->setText(operands);
         } else {                                //就算前面的数和操作数相乘
-            operands = operands + codes + operand;
+            operands = calculation();
             operand = "";
             codes = "";
             ui->display->setText(operands);

@@ -22,7 +22,7 @@ public:
     QString operands;
     QString codes;
 
-    QString calculation(bool &ok);
+    QString calculation();
 
 private:
     Ui::MainWindow *ui;
