@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include<math.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -21,6 +22,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btnSub, SIGNAL(clicked()), this, SLOT(btnOperatorClicked()));
     connect(ui->btnMul, SIGNAL(clicked()), this, SLOT(btnOperatorClicked()));
     connect(ui->btnDivide, SIGNAL(clicked()), this, SLOT(btnOperatorClicked()));
+
+    connect(ui->btnPercentage, SIGNAL(clicked()), this, SLOT(btnUniOperatorClicked()));
+    connect(ui->btnInverse, SIGNAL(clicked()), this, SLOT(btnUniOperatorClicked()));
+    connect(ui->btnSqrt, SIGNAL(clicked()), this, SLOT(btnUniOperatorClicked()));
+    connect(ui->btnSquare, SIGNAL(clicked()), this, SLOT(btnUniOperatorClicked()));
 }
 
 MainWindow::~MainWindow()
@@ -93,7 +99,7 @@ void MainWindow::on_btnSign_clicked()
 //删除键
 void MainWindow::on_btnDel_clicked()
 {
-    if (operand != NULL) {
+    if (operand != "") {
         operand = operand.left(operand.size() - 1);
         ui->display->setText(operand);
     }
@@ -160,6 +166,36 @@ void MainWindow::on_btnEqual_clicked()
             codes = "";
             ui->display->setText(operands);
         }
+    }
+}
+
+//0需要注意，1/x也需要注意
+void MainWindow::btnUniOperatorClicked()
+{
+    QString op = qobject_cast<QPushButton *>(sender())->text();
+//    QString digit = ui->display->text();
+    double result = ui->display->text().toDouble();
+    if (op == "%")
+        result /= 100.0;
+    else if (op == "1/x")
+        result = 1 / result;
+    else if (op == "x^2")
+        result = result * result;
+    else if (op == "√")
+        result = sqrt(result);
+//    if (digit == operands) {
+//        operands = QString::number(result);
+//        ui->display->setText(operands);
+//    } else {
+//        operand = QString::number(result);
+//        ui->display->setText(operand);
+//    }
+    if (operand == "") {
+        operands = QString::number(result);
+        ui->display->setText(operands);
+    } else {
+        operand = QString::number(result);
+        ui->display->setText(operand);
     }
 }
 

@@ -36,5 +36,6 @@ private slots:
     void on_btnClear_clicked();
     void btnOperatorClicked();
     void on_btnEqual_clicked();
+    void btnUniOperatorClicked();
 };
 #endif // MAINWINDOW_H
