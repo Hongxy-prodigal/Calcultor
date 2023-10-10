@@ -94,7 +94,11 @@ void MainWindow::on_btnClear_clicked()
 void MainWindow::btnOperatorClicked()
 {
     code = qobject_cast<QPushButton *>(sender())->text();
-    if (codes != NULL) {
+    if (operand == "") {        //避免多次使用操作数
+        codes = code;
+        return;
+    }
+    if (codes != "") {
         //计算
         operands = operands + codes + operand;
         operand = "";
@@ -112,26 +116,24 @@ void MainWindow::btnOperatorClicked()
         codes = code;
     }
 
+
 }
 
 void MainWindow::on_btnEqual_clicked()
 {
-    if (codes != NULL) {
+
+    if (codes != "") {      //有操作符时
         //计算
-        operands = operands + codes + operand;
-        operand = "";
-        codes = code;
-        ui->display->setText(operands);
-    } else {
-        //不计算
-        if (operand != "") {
-            operands = operand;
+        if (operand == "") {                    //操作数为空让它自己乘自己
+            operands = operands + codes + operands;
+            codes = "";
+            ui->display->setText(operands);
+        } else {                                //就算前面的数和操作数相乘
+            operands = operands + codes + operand;
             operand = "";
-        } else {
-            operands = "0";
+            codes = "";
+            ui->display->setText(operands);
         }
-        ui->display->setText(operand);
-        codes = code;
     }
 }
 
