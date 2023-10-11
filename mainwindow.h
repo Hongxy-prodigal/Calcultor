@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include<QStack>
+#include<QMap>
+#include<QPushButton>
+#include<QKeyEvent>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,6 +24,8 @@ public:
     QString code;
     QString operands;
     QString codes;
+    QMap<int, QPushButton *> keyBtns;
+    QMap<int, QPushButton *> operatorBtns;
 
     QString calculation();
 
@@ -37,5 +42,6 @@ private slots:
     void btnOperatorClicked();
     void on_btnEqual_clicked();
     void btnUniOperatorClicked();
+    virtual void keyPressEvent(QKeyEvent *event);
 };
 #endif // MAINWINDOW_H

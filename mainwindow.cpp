@@ -7,16 +7,31 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    connect(ui->btnNum0, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum1, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum2, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum3, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum4, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum5, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum6, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum7, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum8, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
-    connect(ui->btnNum9, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
+    keyBtns = {
+        {Qt::Key_0, ui->btnNum0},
+        {Qt::Key_1, ui->btnNum1},
+        {Qt::Key_2, ui->btnNum2},
+        {Qt::Key_3, ui->btnNum3},
+        {Qt::Key_4, ui->btnNum4},
+        {Qt::Key_5, ui->btnNum5},
+        {Qt::Key_6, ui->btnNum6},
+        {Qt::Key_7, ui->btnNum7},
+        {Qt::Key_8, ui->btnNum8},
+        {Qt::Key_9, ui->btnNum9},
+    };
+    operatorBtns = {
+        {Qt::Key_Backspace, ui->btnDel},
+        {Qt::Key_Slash, ui->btnDivide},
+        {Qt::Key_Asterisk, ui->btnMul},
+        {Qt::Key_Minus, ui->btnSub},
+        {Qt::Key_Plus, ui->btnPlus},
+        {Qt::Key_Equal, ui->btnEqual},
+        {Qt::Key_Return, ui->btnEqual},
+    };
+    QList<QPushButton *> values = keyBtns.values();
+    foreach (auto btn, values) {
+        connect(btn, SIGNAL(clicked()), this, SLOT(btnNumClicked()));
+    }
 
     connect(ui->btnPlus, SIGNAL(clicked()), this, SLOT(btnOperatorClicked()));
     connect(ui->btnSub, SIGNAL(clicked()), this, SLOT(btnOperatorClicked()));
@@ -56,6 +71,9 @@ QString MainWindow::calculation()
         if (operand == "")
             result = 1;
         else if (operand == "0") {
+            operand = "";
+            code = "";
+            codes = "";
             return "除数不能为零";
         }
         result = operands.toDouble() / operand.toDouble();
@@ -169,7 +187,7 @@ void MainWindow::on_btnEqual_clicked()
     }
 }
 
-//0需要注意，1/x也需要注意
+//实现单操作和计算器一样
 void MainWindow::btnUniOperatorClicked()
 {
     QString op = qobject_cast<QPushButton *>(sender())->text();
@@ -177,9 +195,17 @@ void MainWindow::btnUniOperatorClicked()
     double result = ui->display->text().toDouble();
     if (op == "%")
         result /= 100.0;
-    else if (op == "1/x")
+    else if (op == "1/x") {
+        if (result == 0) {
+            operands = "除数不能为零";
+            operand = "";
+            code = "";
+            codes = "";
+            ui->display->setText(operands);
+            return;
+        }
         result = 1 / result;
-    else if (op == "x^2")
+    } else if (op == "x^2")
         result = result * result;
     else if (op == "√")
         result = sqrt(result);
@@ -190,6 +216,7 @@ void MainWindow::btnUniOperatorClicked()
 //        operand = QString::number(result);
 //        ui->display->setText(operand);
 //    }
+    //判断当前数字是结果还是操作数
     if (operand == "") {
         operands = QString::number(result);
         ui->display->setText(operands);
@@ -198,4 +225,19 @@ void MainWindow::btnUniOperatorClicked()
         ui->display->setText(operand);
     }
 }
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    QList<int> values = keyBtns.keys();
+    foreach (auto key, values) {
+        if (event->key() == key)
+            emit keyBtns[key]->clicked();
+    }
+    QList<int> values1 = operatorBtns.keys();
+    foreach (auto op, values1) {
+        if (event->key() == op)
+            emit operatorBtns[op]->clicked();
+    }
+}
+
 
